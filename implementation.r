@@ -60,7 +60,7 @@ ggplot(plot_data, aes(x=coupon, y=transactions_per_subject)) +
 # Plot revenue_per_subject
 plot_data <- data.frame(
   coupon=factor(c("Without coupon", "With coupon"), 
-                levels = c("Without coupon", "With coupon")),  
+                levels = c("Without coupon", "With coupon")),
   revenue_per_subject=effects_of_coupon$revenue_per_subject
 )
 ggplot(plot_data, aes(x=coupon, y=revenue_per_subject)) + 
