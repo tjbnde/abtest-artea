@@ -1,10 +1,23 @@
 install.packages("tidyverse")
 library(tidyverse)
 
-data <- read.csv("data.csv")
+data <- read.csv("data-cleaned.csv")
 
 # Task 1
 # (check if manipulation was indeed random)
+
+# Compare number of values in both test sets
+data %>%
+  group_by(test_coupon) %>%
+  summarise(n = n())
+
+# check for channel_acq
+data_channel_acq = data %>%
+  group_by(test_coupon, channel_acq) %>%
+  summarize(count=n())
+
+t.test(channel_acq ~ test_coupon, data = data)
+
 
 # Task 2
 # (Were they effective: Did it increase revenue or interactions?)
