@@ -1,8 +1,3 @@
-library(tidyverse)
-
-ab_test <- read.csv("data.csv")
-
-
 # Did it increase revenue or interactions?
 
 # Is it relevant for everyone or just for a specific target group? Difference between channels, customers?
