@@ -1,7 +1,8 @@
 install.packages("tidyverse")
+install.packages("psych")
 library(tidyverse)
 library(ggplot2)
-
+library(psych)
 data <- read.csv("data-cleaned.csv")
 
 # -------------------------------------------------------------------------- #
@@ -69,6 +70,17 @@ ggplot(plot_data, aes(x=coupon, y=revenue_per_subject)) +
 # -------------------------------------------------------------------------- #
 # Task 3
 # a. What drives effect of the coupon?
+
+# Q: Does the number of previous purchases impact the efficiency 
+# (the revenue per subject) of the coupon?
+a = data %>%
+  group_by(test_coupon, num_past_purch) %>%
+  summarize(number = n(), revenue_per_subject = sum(revenue_after)/n(), 
+            transactions_per_subject = sum(trans_after)/n())
+print(n=100, a)
+# A: Yes, it does. E
+
+
 # b. Is it relevant for everyone or just for a specific target group?
 #    Difference between channels or customers?
 
