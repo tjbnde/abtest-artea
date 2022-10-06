@@ -6,6 +6,23 @@ data <- read.csv("data.csv")
 # Task 1
 # (check if manipulation was indeed random)
 
+# Check for test_coupon && browsing_minutes
+
+data %>%
+    group_by(test_coupon) %>%
+    summarize(number = n(), mean(browsing_minutes), sd(browsing_minutes))
+
+t.test(browsing_minutes ~ test_coupon, data = data)
+
+# Check for test_coupon && num_past_purch
+
+data %>%
+    group_by(test_coupon) %>%
+    summarize(number = n(), mean(num_past_purch), sd(num_past_purch))
+
+t.test(num_past_purch ~ test_coupon, data = data)
+
+
 # Task 2
 # (Were they effective: Did it increase revenue or interactions?)
 
