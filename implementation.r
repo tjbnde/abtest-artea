@@ -1,7 +1,7 @@
 install.packages("tidyverse")
 library(tidyverse)
 
-data = read.csv("data.csv")
+data = read.csv("data-cleaned.csv")
 
 # Task 1
 
