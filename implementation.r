@@ -2,13 +2,15 @@ install.packages("tidyverse")
 install.packages("plotrix")
 install.packages("psych")
 install.packages("ggplot")
+install.packages("psych")
 library(tidyverse)
 library(plotrix)
 library(psych)
 library(ggplot)
+library(psych)
+data <- read.csv("data-cleaned.csv")
 
-data <- read.csv("data.csv")
-
+# -------------------------------------------------------------------------- #
 # Task 1
 # (check if manipulation was indeed random)
 
@@ -103,15 +105,61 @@ data %>%
 
 describeBy(data$shopping_cart, data$test_coupon)
 
+ggplot(data, aes(x = shopping_cart, fill = test_coupon)) +
+    geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
+    geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3)
 
+# -------------------------------------------------------------------------- #
 # Task 2
 # (Were they effective: Did it increase revenue or interactions?)
 
+effects_of_coupon <- data %>%
+    group_by(test_coupon) %>%
+    summarize(
+        number = n(), revenue_per_subject = sum(revenue_after) / n(),
+        transactions_per_subject = sum(trans_after) / n()
+    )
+
+# Plot transactions_per_subject
+plot_data <- data.frame(
+    coupon = factor(c("Without coupon", "With coupon"),
+        levels = c("Without coupon", "With coupon")
+    ),
+    transactions_per_subject = effects_of_coupon$transactions_per_subject
+)
+ggplot(plot_data, aes(x = coupon, y = transactions_per_subject)) +
+    geom_bar(stat = "identity", width = 0.2)
+
+# Plot revenue_per_subject
+plot_data <- data.frame(
+    coupon = factor(c("Without coupon", "With coupon"),
+        levels = c("Without coupon", "With coupon")
+    ),
+    revenue_per_subject = effects_of_coupon$revenue_per_subject
+)
+ggplot(plot_data, aes(x = coupon, y = revenue_per_subject)) +
+    geom_bar(stat = "identity", width = 0.2)
+
+# -------------------------------------------------------------------------- #
 # Task 3
 # a. What drives effect of the coupon?
+
+# Q: Does the number of previous purchases impact the efficiency
+# (the revenue per subject) of the coupon?
+a <- data %>%
+    group_by(test_coupon, num_past_purch) %>%
+    summarize(
+        number = n(), revenue_per_subject = sum(revenue_after) / n(),
+        transactions_per_subject = sum(trans_after) / n()
+    )
+print(n = 100, a)
+# A: Yes, it does. E
+
+
 # b. Is it relevant for everyone or just for a specific target group?
 #    Difference between channels or customers?
 
+# -------------------------------------------------------------------------- #
 # Task 4
 # a. Which of the NEW customers should recieve a coupon
 # b. By how much in terms of revenue increase would this campaign be effective
@@ -120,3 +168,5 @@ describeBy(data$shopping_cart, data$test_coupon)
 
 # Hint: Include Error-bars of standard error / deviation
 # Submit to scheibehenne@kit.edu, use a .ppt and put your names on it
+# Results from discussion:
+# revenue with coupons got worse
