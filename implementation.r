@@ -392,18 +392,103 @@ shopping_cart_ref <- data %>%
 #  Instagram regardless of the shopping cart,
 #  revenue increases for the coupon
 
+# Weeks since visit => No difference in itself
+
+time_past <- data %>%
+    group_by(weeks_since_visit, test_coupon) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
+print(time_past, n=100)
+
+ggplot(time_past, aes(fill = factor(test_coupon),
+        y = revenue, x = weeks_since_visit, group = test_coupon)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue,
+        ymax = revenue + error_revenue), width = .2,
+        position = position_dodge(.9))
+
+# Browsing Minutes => Few minutes better for coupon but high error
+
+time_spent <- data %>%
+    mutate(ints = cut(browsing_minutes, breaks = 11)) %>%
+    group_by(ints, test_coupon) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 50)
+
+print(time_spent, n=100)
+
+ggplot(time_spent, aes(fill = factor(test_coupon),
+        y = revenue, x = ints, group = test_coupon)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue,
+        ymax = revenue + error_revenue), width = .2,
+        position = position_dodge(.9))
+
 # b. Is it relevant for everyone or just for a specific target group?
 #    Difference between channels or customers?
 # RESULT:
-# Target Facebook, Instagram and Referral with Shopping card or 0-2 past purchases, not-target google or other at all
+# Target Facebook, Instagram and Referral with Shopping cart or 0-2 past purchases, not-target google or other at all
 
 # BUT: This leads to discrimination
 # -------------------------------------------------------------------------- #
 # Task 4
 # a. Which of the new customers should recieve a coupon
+# (IG and Shopping Cart) or (0-2 past purchases) or FB
+
+# Group#1: YES / YES
+
+data %>%
+    filter((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3) & test_coupon == 1) %>%
+    summarize(n(), mean(revenue_after), std.error(revenue_after))
+
+# Group#2: NO / NO
+
+data %>%
+    filter(!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)) & test_coupon == 0) %>%
+    summarize(n(), mean(revenue_after), std.error(revenue_after))
+
+# Group didn't recieve a coupon
+
+control_cust_data <- data %>%
+    filter(test_coupon == 0) %>%
+    summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after))
+
+# Group #1 + #2 (with AND num_past_purch  < 3)
+
+chosen_cust_data <- data %>%
+    filter(((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3) & test_coupon == 1) |
+        (!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)) & test_coupon == 0)) %>%
+    summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after))
+
+# Group #1 + #2 (with OR num_past_purch  < 3)
+
+data %>%
+    filter(((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) | num_past_purch < 3) & test_coupon == 1) |
+        (!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) | num_past_purch < 3)) & test_coupon == 0)) %>%
+    summarize(n(), mean(revenue_after), std.error(revenue_after))
+
+# Previous test without proper coupon consideration
+
+# data %>%
+#     filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2)) %>%
+#     summarize(n(), mean(revenue_after), std.error(revenue_after))
+
+# data %>%
+#     filter(!(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2))) %>%
+#     summarize(n(), mean(revenue_after), std.error(revenue_after))
+
 # b. By how much in terms of revenue increase would this campaign be effective
 # if those cust. were targeted
 
+increase <- chosen_cust_data$mean_revenue / control_cust_data$mean_revenue
+print(increase)
+
+# => Mean revenue increased by 9.7%
 
 # -------------------------------------------------------------------------- #
 # Task 5
