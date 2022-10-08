@@ -229,19 +229,92 @@ data %>%
 
 # Previous transactions count -> Rev&Trans
 trans_count <- data %>%
-    group_by(test_coupon, num_past_purch) %>%
+    group_by(num_past_purch, test_coupon) %>%
     summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
 
 print(trans_count, n = 100)
 
+ggplot(trans_count, aes(fill = factor(test_coupon),
+        y = revenue, x = num_past_purch, group = test_coupon)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue,
+        ymax = revenue + error_revenue), width = .2,
+        position = position_dodge(.9))
+
+ggplot(trans_count, aes(fill = factor(test_coupon),
+        y = transactions, x = num_past_purch, group = test_coupon)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = transactions - error_trans,
+        ymax = transactions + error_trans), width = .2,
+        position = position_dodge(.9))
 # Google vs. Facebook with shopping cart
+
+shopping_cart_full <- data %>%
+    group_by(shopping_cart, test_coupon) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
+ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
+        y = revenue, x = shopping_cart, group = test_coupon)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue,
+        ymax = revenue + error_revenue), width = .2,
+        position = position_dodge(.9))
+
+ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
+        y = transactions, x = shopping_cart, group = test_coupon)) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = transactions - error_trans,
+        ymax = transactions + error_trans), width = .2,
+        position = position_dodge(.9))
+
+shopping_cart_fb <- data %>%
+    filter(channel_acq == 2) %>%
+    group_by(shopping_cart, test_coupon) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
+shopping_cart_ig <- data %>%
+    filter(channel_acq == 3) %>%
+    group_by(shopping_cart, test_coupon) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
+shopping_cart_google <- data %>%
+    filter(channel_acq == 1) %>%
+    group_by(shopping_cart, test_coupon) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
+shopping_cart_ref <- data %>%
+    filter(channel_acq == 4) %>%
+    group_by(shopping_cart, test_coupon) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
+    error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
+# => For Facebook only with item in shopping cart,
+#  Instagram regardless of the shopping cart,
+#  revenue increases for the coupon
 
 # b. Is it relevant for everyone or just for a specific target group?
 #    Difference between channels or customers?
 # RESULT:
-# Target Facebook, not-target google,
-# people with shopping cart who have not checked-out
+# Target Facebook, Instagram and Referral with Shopping card or 0-2 past purchases, not-target google or other at all
+
 # BUT: This leads to discrimination
 # -------------------------------------------------------------------------- #
 # Task 4
@@ -270,6 +343,13 @@ print(trans_count, n = 100)
 
 # Annes Plots (might be sorted in or removed in the end)
 
+data$ytest_coupon=factor(data$test_coupon)
+data$yshopping_cart=factor(data$shopping_cart)
+data_channel_acq <- data %>%
+    group_by(test_coupon, channel_acq) %>%
+    summarize(n = n())
+data_channel_acq$ytest_coupon=factor(data_channel_acq$test_coupon)
+
 # --- Grouped Bar Plot --- #
 ggplot(data_channel_acq, aes(x = channel_acq, y = n, fill=ytest_coupon)) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
@@ -297,7 +377,7 @@ ggplot(data_browing_minutes, aes(x = browsing_minutes, y = n, fill=ytest_coupon)
 # --- Boxplot Number of past purchases --- #
 ggplot(data, aes(x = ytest_coupon, y = num_past_purch, fill = ytest_coupon)) +
   geom_boxplot() + 
-  stat_summary(fun.y=mean, geom="point", shape=20, size=7, color="red", fill="red") +
+  stat_summary(fun=mean, geom="point", shape=20, size=7, color="red", fill="red") +
   labs(title="Number of past purchases with and without test coupon", x="Test coupon", y="Number of past purchases")
 
 
