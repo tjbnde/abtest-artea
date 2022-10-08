@@ -233,36 +233,72 @@ facebook <- data %>%
     filter(channel_acq == 2) %>%
     group_by(num_past_purch, test_coupon) %>%
     summarize(number = n(), revenue_per_subject = mean(revenue_after),
-    error = std.error(revenue_after), transactions_per_subject = mean(trans_after))
+    error = std.error(revenue_after), transactions_per_subject = mean(trans_after)) %>%
+    filter(number >= 10)
 
 facebook$ytest_coupon=factor(facebook$test_coupon)
 
 ggplot(facebook, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
-  labs(title="Revenue per subject with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to facebook channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
 
 ## Instagram
-data %>%
+instagram <- data %>%
     filter(channel_acq == 3) %>%
     group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
+    filter(number >= 10)
 
+instagram$ytest_coupon=factor(instagram$test_coupon)
+
+ggplot(instagram, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to instagram channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
 
 
 ## Referral
-data %>%
+referral <- data %>%
     filter(channel_acq == 4) %>%
     group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
+    filter(number >= 10)
+
+referral$ytest_coupon=factor(referral$test_coupon)
+
+ggplot(referral, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to referral channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
 
 ## Other
-data %>%
+other <- data %>%
     filter(channel_acq == 5) %>%
     group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
+    filter(number >= 10)
+
+
+other$ytest_coupon=factor(other$test_coupon)
+
+ggplot(other, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to other channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
 
 
 # -> Facebook, Instagram with 0-2 past purchses
