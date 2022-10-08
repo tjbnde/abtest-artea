@@ -8,7 +8,7 @@ library(plotrix)
 library(psych)
 library(ggplot)
 library(psych)
-data <- read.csv("data-cleaned.csv")
+data <- read.csv("data.csv")
 
 # -------------------------------------------------------------------------- #
 # Task 1
@@ -228,6 +228,8 @@ data %>%
 # b. By how much in terms of revenue increase would this campaign be effective
 # if those cust. were targeted
 
+
+# -------------------------------------------------------------------------- #
 # Task 5
 # Is there discrimination when using the strategy
 # Female / male with shopping carts
