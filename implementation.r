@@ -1,12 +1,12 @@
 install.packages("tidyverse")
 install.packages("plotrix")
 install.packages("psych")
-install.packages("ggplot")
+install.packages("ggplot2")
 install.packages("psych")
 library(tidyverse)
 library(plotrix)
 library(psych)
-library(ggplot)
+library(ggplot2)
 library(psych)
 data <- read.csv("data-cleaned.csv")
 
@@ -166,7 +166,7 @@ data %>%
 # Rev&Trans -> NO for 1-search and 5-other (but 5-other has small n()),
 # MINIMAL for 4-referral and YES for Social (2-facebook, 3-instagram)
 
-# Shopping cart difference
+# Shopping cart difference 
 shopping_cart <- data %>%
     group_by(shopping_cart, test_coupon) %>%
     summarize(number = n(), revenue = mean(revenue_after),
@@ -213,6 +213,12 @@ data %>%
     error = std.error(revenue_after), transactions = mean(trans_after))
 
 # Previous transactions count -> Rev&Trans
+trans_count <- data %>%
+    group_by(test_coupon, num_past_purch) %>%
+    summarize(number = n(), revenue = mean(revenue_after),
+    error = std.error(revenue_after), transactions = mean(trans_after))
+
+print(trans_count, n = 100)
 
 # Google vs. Facebook with shopping cart
 
