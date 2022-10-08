@@ -1,8 +1,8 @@
-install.packages("tidyverse")
-install.packages("plotrix")
-install.packages("psych")
-install.packages("ggplot2")
-install.packages("psych")
+# install.packages("tidyverse")
+# install.packages("plotrix")
+# install.packages("psych")
+# install.packages("ggplot2")
+# install.packages("psych")
 library(tidyverse)
 library(plotrix)
 library(psych)
@@ -166,17 +166,49 @@ a <- data %>%
         number = n(), revenue_per_subject = sum(revenue_after) / n(),
         transactions_per_subject = sum(trans_after) / n()
     )
+a$ytest_coupon = factor(a$test_coupon)
 print(n = 100, a)
 # A: Yes, it does. E
 
-data %>%
-    group_by(, weeks_since_visit) %>%
-    summarize(n(), mean(revenue_after))
+ggplot(a, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  labs(title="Revenue per subject with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
+
+ggplot(a, aes(x = num_past_purch, y = transactions_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  labs(title="Transaction per subject with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Transactions per subect")
+
+
+b <- data %>%
+    group_by(test_coupon, weeks_since_visit) %>%
+    summarize(n(), revenue_per_subject = mean(revenue_after))
+b
+b$ytest_coupon = factor(b$test_coupon)
+
+ggplot(b, aes(x = weeks_since_visit, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=round(revenue_per_subject, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Revenue per subject with respect to weeks since last visit and in comparison with and without coupon", x = "Weeks since last visit", y = "Revenue per subect")
+
 
 # Differences per channel
-data %>%
+c <- data %>%
     group_by(test_coupon, channel_acq) %>%
-    summarize(n(), mean(revenue_after), mean(trans_after))
+    summarize(n(), revenue_per_subject = mean(revenue_after), transactions_per_subject = mean(trans_after))
+
+c$ytest_coupon = factor(c$test_coupon)
+
+ggplot(c, aes(x = channel_acq, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=round(revenue_per_subject, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
+  labs(title="Revenue per subject with respect to channel acquisition and in comparison with and without coupon", x = "Channels", y = "Revenue per subect")
+
+ggplot(c, aes(x = channel_acq, y = transactions_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=round(revenue_per_subject, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
+  labs(title="Transactions per subject with respect to channel acquisition and in comparison with and without coupon", x = "Channels", y = "Transactions per subect")
+
 
 # Rev&Trans -> NO for 1-search and 5-other (but 5-other has small n()),
 # MINIMAL for 4-referral and YES for Social (2-facebook, 3-instagram)
@@ -184,39 +216,89 @@ data %>%
 # Shopping cart difference 
 shopping_cart <- data %>%
     group_by(shopping_cart, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
     error = std.error(revenue_after), transactions = mean(trans_after)) %>%
     unite(test_coupon, shopping_cart)
     spread(1:4)
 
-ggplot(shopping_cart, aes(x = revenue)) +
+
+
+ggplot(shopping_cart, aes(x = revenue_per_subject)) +
     geom_bar(data = shopping_cart, fill = "red", alpha = 0.3)
 
 
 # Pervious spendings & Social media
-data %>%
+## Facebook
+facebook <- data %>%
     filter(channel_acq == 2) %>%
     group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error = std.error(revenue_after), transactions_per_subject = mean(trans_after)) %>%
+    filter(number >= 10)
 
-data %>%
+facebook$ytest_coupon=factor(facebook$test_coupon)
+
+ggplot(facebook, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to facebook channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
+## Instagram
+instagram <- data %>%
     filter(channel_acq == 3) %>%
     group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
+    filter(number >= 10)
 
-data %>%
+instagram$ytest_coupon=factor(instagram$test_coupon)
+
+ggplot(instagram, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to instagram channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
+
+## Referral
+referral <- data %>%
     filter(channel_acq == 4) %>%
     group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
+    filter(number >= 10)
 
-data %>%
+referral$ytest_coupon=factor(referral$test_coupon)
+
+ggplot(referral, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to referral channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
+
+## Other
+other <- data %>%
     filter(channel_acq == 5) %>%
     group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
+    filter(number >= 10)
+
+
+other$ytest_coupon=factor(other$test_coupon)
+
+ggplot(other, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to other channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
 
 
 # -> Facebook, Instagram with 0-2 past purchses
