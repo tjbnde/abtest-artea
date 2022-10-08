@@ -189,6 +189,8 @@ shopping_cart <- data %>%
     unite(test_coupon, shopping_cart)
     spread(1:4)
 
+# Minor change
+
 ggplot(shopping_cart, aes(x = revenue)) +
     geom_bar(data = shopping_cart, fill = "red", alpha = 0.3)
 
