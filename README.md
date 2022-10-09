@@ -3,6 +3,7 @@
 ## Links to important files:
 
 ### Powerpoint:
+* Slides: https://github.com/tjbnde/abtest-artea/blob/master/ARTEA_Case_Study_LD_TJ_AH_SK_final.pdf
 
 ### Tasks 1-5:
 * Implementation in R: https://github.com/tjbnde/abtest-artea/blob/master/implementation.r
