@@ -643,12 +643,21 @@ ggplot(shopping_cart_minority, aes(x = factor(shopping_cart), y = n, fill=factor
 
 
 
-
 # apply our filter on the new campaign data
 data_new_campaign <- data_new_campaign %>%
     mutate(new_coupon = if_else(((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3, 1, 0))
 
-# Check for number in males/females and minorities in overall and in filtered set
+
+# Gender: Men who recieve coupon vs women who recieve coupon
+plot_gender <- data_new_campaign %>%
+  group_by(non_male) %>%
+  summarize(perc_with_coupon = sum(new_coupon)/n()*100)
+
+ggplot(plot_gender, aes(x=factor(non_male), y=perc_with_coupon, fill=factor(non_male))) +
+  geom_bar(position = "dodge", stat = "identity") +
+  labs(title="Comparison of coupon allocation with regards to gender", x="Male (0) vs. Non-male (1)", y="Coupon allocation in percentage")
+
+
 campaign_gender <- data_new_campaign %>%
   group_by(new_coupon, non_male) %>%
   summarize(n = n())
@@ -717,14 +726,6 @@ plot_new_coupon <- data_new_campaign %>%
     summarize(perc_non_male = sum(non_male)/n()*100, perc_minority = sum(minority)/n()*100) %>%
     gather(factor, value, 2:3)
 
-# Gender: Men who recieve coupon vs women who recieve coupon
-plot_gender <- data_new_campaign %>%
-    group_by(non_male) %>%
-    summarize(perc_with_coupon = sum(new_coupon)/n()*100)
-
-ggplot(plot_gender, aes(x=factor(non_male), y=perc_with_coupon, fill=factor(non_male))) +
-  geom_bar(position = "dodge", stat = "identity") +
-  labs(title="Comparison of coupon allocation with regards to gender", x="Male (0) vs. Non-male (1)", y="Coupon allocation in percentage")
 
 ggplot(plot_new_coupon, aes(fill = factor(new_coupon),
         y = value, x = factor, group = new_coupon)) +
