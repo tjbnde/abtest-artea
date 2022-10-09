@@ -187,7 +187,7 @@ ggplot(a, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
   geom_errorbar(aes(ymin = revenue_per_subject - error_revenue,
         ymax = revenue_per_subject + error_revenue), width = .2,
         position = position_dodge(.9)) +
-  labs(title="Revenue per subject with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+  labs(title="Revenue per person with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per person")
 
 
 ggplot(a, aes(x = num_past_purch, y = transactions_per_subject, fill=ytest_coupon)) +
@@ -195,7 +195,7 @@ ggplot(a, aes(x = num_past_purch, y = transactions_per_subject, fill=ytest_coupo
   geom_errorbar(aes(ymin = transactions_per_subject - error_trans,
       ymax = transactions_per_subject + error_trans), width = .2,
       position = position_dodge(.9)) +
-  labs(title="Transaction per subject with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Transactions per subect")
+  labs(title="Transaction per person with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Transactions per person")
 
 
 b <- data %>%
@@ -400,7 +400,7 @@ ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
     geom_errorbar(aes(ymin = revenue - error_revenue,
         ymax = revenue + error_revenue), width = .2,
         position = position_dodge(.9)) + 
-    labs(title="Revenues of persons with items in shopping carts with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Revenue per subject")
+    labs(title="Revenues of persons with items in shopping carts with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Revenue per person")
 
 
 ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
@@ -409,7 +409,7 @@ ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
     geom_errorbar(aes(ymin = transactions - error_trans,
         ymax = transactions + error_trans), width = .2,
         position = position_dodge(.9)) +
-    labs(title="Transactions of persons with items in shopping carts with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Transactions per subject")
+    labs(title="Transactions of persons with items in shopping carts with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Transactions per person")
 
 shopping_cart_fb <- data %>%
     filter(channel_acq == 2) %>%
@@ -419,6 +419,16 @@ shopping_cart_fb <- data %>%
     error_trans = std.error(trans_after)) %>%
     filter(number >= 10)
 
+
+shopping_cart_fb
+
+
+ggplot(shopping_cart_fb, aes(fill = factor(test_coupon), y = revenue, x = factor(shopping_cart))) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue, ymax = revenue + error_revenue), width = .2, position = position_dodge(.9)) + 
+    labs(title="Revenue of facebook channel acquisition with persons having items in shopping carts", x = "Items in shopping cart [0=no; 1=yes]", y = "Revenue per person")
+
+
 shopping_cart_ig <- data %>%
     filter(channel_acq == 3) %>%
     group_by(shopping_cart, test_coupon) %>%
@@ -426,6 +436,14 @@ shopping_cart_ig <- data %>%
     error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
     error_trans = std.error(trans_after)) %>%
     filter(number >= 10)
+
+shopping_cart_ig
+
+ggplot(shopping_cart_ig, aes(fill = factor(test_coupon), y = revenue, x = factor(shopping_cart))) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue, ymax = revenue + error_revenue), width = .2, position = position_dodge(.9)) + 
+    labs(title="Revenue of instagram channel acquisition with persons having items in shopping carts", x = "Items in shopping cart [0=no; 1=yes]", y = "Revenue per person")
+
 
 shopping_cart_google <- data %>%
     filter(channel_acq == 1) %>%
@@ -435,6 +453,12 @@ shopping_cart_google <- data %>%
     error_trans = std.error(trans_after)) %>%
     filter(number >= 10)
 
+ggplot(shopping_cart_google, aes(fill = factor(test_coupon), y = revenue, x = factor(shopping_cart))) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue, ymax = revenue + error_revenue), width = .2, position = position_dodge(.9)) + 
+    labs(title="Revenue of google channel acquisition with persons having items in shopping carts", x = "Items in shopping cart [0=no; 1=yes]", y = "Revenue per person")
+
+
 shopping_cart_ref <- data %>%
     filter(channel_acq == 4) %>%
     group_by(shopping_cart, test_coupon) %>%
@@ -443,11 +467,23 @@ shopping_cart_ref <- data %>%
     error_trans = std.error(trans_after)) %>%
     filter(number >= 10)
 
+shopping_cart_ref
+
+ggplot(shopping_cart_ref, aes(fill = factor(test_coupon), y = revenue, x = factor(shopping_cart))) +
+    geom_bar(position = "dodge", stat = "identity") +
+    geom_errorbar(aes(ymin = revenue - error_revenue, ymax = revenue + error_revenue), width = .2, position = position_dodge(.9)) + 
+    labs(title="Revenue of referral channel acquisition with persons having items in shopping carts", x = "Items in shopping cart [0=no; 1=yes]", y = "Revenue per person")
+
+
+
+
+
 # => For Facebook only with item in shopping cart,
 #  Instagram regardless of the shopping cart,
 #  revenue increases for the coupon
 
 # Weeks since visit => No difference in itself
+
 
 time_past <- data %>%
     group_by(weeks_since_visit, test_coupon) %>%
