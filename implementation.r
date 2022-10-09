@@ -516,26 +516,16 @@ control_cust_data <- data %>%
 # Group #1 + #2 (with AND num_past_purch  < 3)
 
 chosen_cust_data <- data %>%
-    filter(((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3) & test_coupon == 1) |
-        (!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)) & test_coupon == 0)) %>%
+    filter(((((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3) & test_coupon == 1) |
+        (!((((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3)) & test_coupon == 0)) %>%
     summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after), mean_trans = mean(trans_after), std.error(trans_after))
 
-# Group #1 + #2 (with OR num_past_purch  < 3)
+# Group #1 + #2 (with OR num_past_purch  < 3) - ONLY FOR TESTING PURPOSE
 
 data %>%
-    filter(((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) | num_past_purch < 3) & test_coupon == 1) |
-        (!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) | num_past_purch < 3)) & test_coupon == 0)) %>%
+    filter(((((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) | num_past_purch < 3) & test_coupon == 1) |
+        (!((((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) | num_past_purch < 3)) & test_coupon == 0)) %>%
     summarize(n(), mean(revenue_after), std.error(revenue_after), mean(trans_after), std.error(trans_after))
-
-# Previous test without proper coupon consideration
-
-# data %>%
-#     filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2)) %>%
-#     summarize(n(), mean(revenue_after), std.error(revenue_after))
-
-# data %>%
-#     filter(!(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2))) %>%
-#     summarize(n(), mean(revenue_after), std.error(revenue_after))
 
 # b. By how much in terms of revenue increase would this campaign be effective
 # if those cust. were targeted
@@ -543,7 +533,7 @@ data %>%
 increase <- (chosen_cust_data$mean_revenue / control_cust_data$mean_revenue) - 1
 print(increase)
 
-# => Mean revenue increased by 9.7%
+# => Mean revenue increased by 9.8%
 
 # b. By how much in terms of transactions increase would this campaign be effective
 # if those cust. were targeted
@@ -621,7 +611,7 @@ ggplot(shopping_cart_minority, aes(x = factor(shopping_cart), y = n, fill=factor
 
 # apply our filter on the new campaign data
 data_new_campaign <- data_new_campaign %>%
-    mutate(new_coupon = if_else(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3, 1, 0))
+    mutate(new_coupon = if_else(((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3, 1, 0))
 
 # Check for number in males/females and minorities in overall and in filtered set
 campaign_gender <- data_new_campaign %>%
@@ -649,7 +639,7 @@ ggplot(campaign_minority, aes(x = factor(new_coupon), y = n, fill=factor(minorit
 
 # Check for number in males/females in overall and in filtered set
 customers_with_coupon_new_campaign = data_new_campaign %>%
-  filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
+  filter(((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3)
 
 # Annes plot
 new_camp_with_coupon <- customers_with_coupon_new_campaign %>%
