@@ -10,8 +10,14 @@ library(ggplot2)
 library(psych)
 data <- read.csv("data.csv")
 
-# -------------------------------------------------------------------------- #
-# Task 1
+
+# _______        _      __ 
+#|__   __|      | |    /_ |
+#   | | __ _ ___| | __  | |
+#   | |/ _` / __| |/ /  | |
+#   | | (_| \__ \   <   | |
+#   |_|\__,_|___/_|\_\  |_|
+#                   
 # (check if manipulation was indeed random)
 
 # Compare number of values in both test sets
@@ -120,8 +126,13 @@ ggplot(data, aes(x = factor(shopping_cart), fill = test_coupon)) +
   labs(title="Comparison of items in shopping cards of persons with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Number of persons")
 
 
-# -------------------------------------------------------------------------- #
-# Task 2
+#  _______        _      ___  
+# |__   __|      | |    |__ \ 
+#    | | __ _ ___| | __    ) |
+#    | |/ _` / __| |/ /   / / 
+#    | | (_| \__ \   <   / /_ 
+#    |_|\__,_|___/_|\_\ |____|
+#
 # (Were they effective: Did it increase revenue or interactions?)
 
 effects_of_coupon <- data %>%
@@ -165,8 +176,14 @@ ggplot(plot_data, aes(x = coupon, y = revenue_per_subject)) +
     geom_text(aes(label=round(revenue_per_subject, digits=4)), position=position_dodge(width=0.9), vjust=-3.6) +
     labs(title="Comparsion revenue per person after the experiment of persons with and without coupon", x="Coupon availability", y="Revenue per person")
 
-# -------------------------------------------------------------------------- #
-# Task 3
+
+#  _______        _      ____  
+# |__   __|      | |    |___ \ 
+#    | | __ _ ___| | __   __) |
+#    | |/ _` / __| |/ /  |__ < 
+#    | | (_| \__ \   <   ___) |
+#    |_|\__,_|___/_|\_\ |____/ 
+
 # a. What drives effect of the coupon?
 # Q: Does the number of previous purchases impact the efficiency
 # (the revenue per subject) of the coupon?
@@ -526,8 +543,17 @@ ggplot(time_spent, aes(fill = factor(test_coupon),
 # Target Facebook, Instagram and Referral with Shopping cart or 0-2 past purchases, not-target google or other at all
 
 # BUT: This leads to discrimination
-# -------------------------------------------------------------------------- #
-# Task 4
+
+
+
+
+#  _______        _      _  _   
+# |__   __|      | |    | || |  
+#    | | __ _ ___| | __ | || |_ 
+#    | |/ _` / __| |/ / |__   _|
+#    | | (_| \__ \   <     | |  
+#    |_|\__,_|___/_|\_\    |_|  
+                            
 # a. Which of the new customers should recieve a coupon
 # (FB and Shopping Cart) or (0-2 past purchases) or IG
 
@@ -581,8 +607,15 @@ print(increase)
 # b. By how much in terms of revenue increase would this campaign be effective
 # if those cust. were targeted
 
-# -------------------------------------------------------------------------- #
-# Task 5
+
+
+#  _______        _      _____ 
+# |__   __|      | |    | ____|
+#    | | __ _ ___| | __ | |__  
+#    | |/ _` / __| |/ / |___ \ 
+#    | | (_| \__ \   <   ___) |
+#    |_|\__,_|___/_|\_\ |____/ 
+#
 # Is there discrimination when using the strategy
 # Female / male with shopping carts
 # Facebook&Instagram with minority
@@ -685,6 +718,35 @@ ggplot(campaign_minority, aes(x = factor(new_coupon), y = n, fill=factor(minorit
 customers_with_coupon_new_campaign = data_new_campaign %>%
   filter(((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ---------------- will be deleted in the end -------------
 # Annes plot
 new_camp_with_coupon <- customers_with_coupon_new_campaign %>%
   group_by(non_male) %>%
