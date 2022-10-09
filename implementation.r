@@ -539,6 +539,25 @@ print(increase)
 # Results from discussion:
 # revenue with coupons got worse
 
+data_new_campaign <- read.csv("data_new_campaign.csv")
+
+
+# Check for number in males/females in overall and in filtered set
+customers_with_coupon_new_campaign = data_new_campaign %>%
+  filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
+
+
+customers_with_coupon_new_campaign %>%
+  group_by(non_male) %>%
+  summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
+
+data_new_campaign %>%
+  group_by(non_male) %>%
+  summarize(n = n(), portion=n()/count(data_new_campaign))
+
+
+
+
 
 
 
