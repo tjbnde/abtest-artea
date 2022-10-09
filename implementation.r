@@ -541,7 +541,7 @@ print(increase)
 increase <- (chosen_cust_data$mean_trans / control_cust_data$mean_trans) - 1
 print(increase)
 
-# => Transactions increased by 15.6%
+# => Transactions increased by 15.5%
 
 # b. By how much in terms of revenue increase would this campaign be effective
 # if those cust. were targeted
