@@ -679,7 +679,7 @@ plot_new_coupon <- data_new_campaign %>%
 ggplot(plot_new_coupon, aes(fill = factor(new_coupon),
         y = value, x = factor, group = new_coupon)) +
     geom_text(aes(label=round(value, digits=2)), position=position_dodge(width=0.9), vjust=-0.25) + 
-    geom_bar(position = "dodge", color="black", stat = "identity")+d
+    geom_bar(position = "dodge", color="black", stat = "identity")+
     labs(title="Comparison of gender and minority characteristics with and without coupon", x="Gender and Minority", y="Percentage of persons")
 
 # => Plot Ohne und mit coupon 
