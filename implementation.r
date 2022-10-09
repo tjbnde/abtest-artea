@@ -544,26 +544,50 @@ data_new_campaign <- read.csv("data_new_campaign.csv")
 
 # What do we learn from the  demographics data?
 # Which groups use which channel?
-data_new_campaign %>%
+channel_acq_gender <- data_new_campaign %>%
   group_by(channel_acq, non_male) %>%
   summarize(n = n())
-# TODO: Plot
 
-data_new_campaign %>%
+channel_acq_gender
+
+ggplot(channel_acq_gender, aes(x = channel_acq, y = n, fill=factor(non_male))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison acquisiton channel with respect to gender", x = "Number of subjects", y = "Acquisition Channel")
+
+
+channel_acq_minority <- data_new_campaign %>%
   group_by(channel_acq, minority) %>%
   summarize(n = n())
-# TODO: Plot
+
+
+ggplot(channel_acq_minority, aes(x = channel_acq, y = n, fill=factor(minority))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison acquisiton channel with respect to minority", x = "Number of subjects", y = "Acquisition Channel")
+
+
 
 # Which groups have items in the shopping cart?
-data_new_campaign %>%
+shopping_cart_gender <- data_new_campaign %>%
   group_by(shopping_cart, non_male) %>%
   summarize(n = n())
-# TODO: Plot
 
-data_new_campaign %>%
+ggplot(shopping_cart_gender, aes(x = factor(shopping_cart), y = n, fill=factor(non_male))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of items in shopping cart with respect to gender", x = "Number of subjects", y = "Item in shopping cart [0=no, 1=yes]")
+
+
+shopping_cart_minority <- data_new_campaign %>%
   group_by(shopping_cart, minority) %>%
   summarize(n = n())
-# TODO: Plot
+
+ggplot(shopping_cart_minority, aes(x = factor(shopping_cart), y = n, fill=factor(minority))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of items in shopping cart with respect to minority", x = "Number of subjects", y = "Item in shopping cart [0=no, 1=yes]")
+
 
 
 
