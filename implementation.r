@@ -64,8 +64,8 @@ data %>%
 describeBy(data$browsing_minutes, data$test_coupon)
 
 ggplot(data, aes(x = browsing_minutes, fill = test_coupon)) +
-    geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
-    geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) +
+    geom_bar(data = data_coupon, fill = "blue", alpha = 0.3) +
+    geom_bar(data = data_no_coupon, fill = "red", alpha = 0.3) +
     labs(title="Comparison of browsing minutes of persons with and without coupon", x="Browsing Minutes", y="Number of persons")
 
 
@@ -80,8 +80,8 @@ data %>%
 describeBy(data$num_past_purch, data$test_coupon)
 
 ggplot(data, aes(x = num_past_purch, fill = test_coupon)) +
-    geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
-    geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) +
+    geom_bar(data = data_coupon, fill = "blue", alpha = 0.3) +
+    geom_bar(data = data_no_coupon, fill = "red", alpha = 0.3) +
     labs(title="Comparison of number of past purchases of persons with and without coupon", x="Number of past purchases", y="Number of persons")
 
 
@@ -106,8 +106,8 @@ data %>%
 describeBy(data$weeks_since_visit, data$test_coupon)
 
 ggplot(data, aes(x = factor(weeks_since_visit), fill = test_coupon)) +
-    geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
-    geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) +
+    geom_bar(data = data_coupon, fill = "blue", alpha = 0.3) +
+    geom_bar(data = data_no_coupon, fill = "red", alpha = 0.3) +
     labs(title="Comparison of weeks since last visit of persons with and without coupon", x="Weeks since last visit", y="Number of person")
 
 
@@ -115,8 +115,8 @@ ggplot(data, aes(x = factor(weeks_since_visit), fill = test_coupon)) +
 describeBy(data$shopping_cart, data$test_coupon)
 
 ggplot(data, aes(x = factor(shopping_cart), fill = test_coupon)) +
-  geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
-  geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) + 
+  geom_bar(data = data_coupon, fill = "blue", alpha = 0.3) +
+  geom_bar(data = data_no_coupon, fill = "red", alpha = 0.3) + 
   labs(title="Comparison of items in shopping cards of persons with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Number of visitors")
 
 
