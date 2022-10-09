@@ -508,7 +508,6 @@ data %>%
     summarize(n(), mean(revenue_after), std.error(revenue_after), mean(trans_after), std.error(trans_after))
 
 # Group didn't recieve a coupon (control group)
-
 control_cust_data <- data %>%
     filter(test_coupon == 0) %>%
     summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after), mean_trans = mean(trans_after), std.error(trans_after))
