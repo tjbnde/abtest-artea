@@ -32,7 +32,7 @@ ggplot(no_test_coupon_pos, aes(x="", y = n, fill = ytest_coupon)) +
   coord_polar("y", start = 0) + 
   geom_text(aes(y = lab.ypos, label=n), color= "black") + 
   theme_void() +
-  ggtitle("Numbers of visitor with and without test coupon")
+  ggtitle("Numbers of person with and without test coupon")
 
 
 # Generate data-frames for plotting for coupon and no-coupon
@@ -47,7 +47,7 @@ data_channel_acq <- data %>%
 ggplot(data, aes(x = channel_acq, fill = test_coupon)) +
     geom_bar(data = data_coupon, fill = "blue", alpha = 0.3) +
     geom_bar(data = data_no_coupon, fill = "red", alpha = 0.3) + 
-    labs(title="Comparison of visitors with and without coupon sorted by channel", x = "Channel", y = "Number of visitors")
+    labs(title="Comparison of persons with and without coupon sorted by channel", x = "Channel", y = "Number of persons")
 
 # Maybe relevant: wilcox.test(browsing_minutes ~ test_coupon, data = data)
 
@@ -117,7 +117,7 @@ describeBy(data$shopping_cart, data$test_coupon)
 ggplot(data, aes(x = factor(shopping_cart), fill = test_coupon)) +
   geom_bar(data = data_coupon, fill = "blue", alpha = 0.3) +
   geom_bar(data = data_no_coupon, fill = "red", alpha = 0.3) + 
-  labs(title="Comparison of items in shopping cards of persons with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Number of visitors")
+  labs(title="Comparison of items in shopping cards of persons with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Number of persons")
 
 
 # -------------------------------------------------------------------------- #
@@ -142,9 +142,9 @@ plot_data <- data.frame(
 )
 ggplot(plot_data, aes(x = coupon, y = transactions_per_subject)) +
     geom_bar(stat = "identity", width = 0.2) +
-     geom_errorbar(aes(ymin = transactions_per_subject - error_trans,
-        ymax = transactions_per_subject + error_trans), width = .2,
-        position = position_dodge(.9)) +
+    geom_errorbar(aes(ymin = transactions_per_subject - error_trans,
+      ymax = transactions_per_subject + error_trans), width = .2,
+      position = position_dodge(.9)) +
     geom_text(aes(label=round(transactions_per_subject, digits=4)), position=position_dodge(width=0.9), vjust=-3.5)+
     labs(title="Comparsion number of transactions per subject after the experiment of persons with and without coupon", x="Coupon availability", y="Number of transactions per subject")
 
@@ -153,11 +153,16 @@ plot_data <- data.frame(
     coupon = factor(c("Without coupon", "With coupon"),
         levels = c("Without coupon", "With coupon")
     ),
-    revenue_per_subject = effects_of_coupon$revenue_per_subject
+    revenue_per_subject = effects_of_coupon$revenue_per_subject,
+    error_trans = effects_of_coupon$error_trans,
+    error_rev = effects_of_coupon$error_rev
 )
 ggplot(plot_data, aes(x = coupon, y = revenue_per_subject)) +
     geom_bar(stat = "identity", width = 0.2) +
-    geom_text(aes(label=round(revenue_per_subject, digits=4)), position=position_dodge(width=0.9), vjust=-0.25) +
+    geom_errorbar(aes(ymin = revenue_per_subject - error_rev,
+      ymax = revenue_per_subject + error_rev), width = .2,
+      position = position_dodge(.9)) +
+    geom_text(aes(label=round(revenue_per_subject, digits=4)), position=position_dodge(width=0.9), vjust=-3.6) +
     labs(title="Comparsion revenue per person after the experiment of persons with and without coupon", x="Coupon availability", y="Revenue per person")
 
 # -------------------------------------------------------------------------- #
@@ -710,7 +715,7 @@ data_channel_acq$ytest_coupon=factor(data_channel_acq$test_coupon)
 ggplot(data_channel_acq, aes(x = channel_acq, y = n, fill=ytest_coupon)) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison of visitors with and without coupon sorted by channel", x = "Channel", y = "Number of visitors")
+  labs(title="Comparison of persons with and without coupon sorted by channel", x = "Channel", y = "Number of persons")
 
 # --- Boxplot Browsing Minutes --- #
 ggplot(data, aes(x = ytest_coupon, y = browsing_minutes, fill = ytest_coupon)) +
@@ -728,7 +733,7 @@ data_browing_minutes$ytest_coupon=factor(data_browing_minutes$test_coupon)
 ggplot(data_browing_minutes, aes(x = browsing_minutes, y = n, fill=ytest_coupon)) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison of visitors with and without coupon sorted by channel", x = "Channel", y = "Number of visitors")
+  labs(title="Comparison of persons with and without coupon sorted by channel", x = "Channel", y = "Number of persons")
 
 # --- Boxplot Number of past purchases --- #
 ggplot(data, aes(x = ytest_coupon, y = num_past_purch, fill = ytest_coupon)) +
