@@ -717,6 +717,15 @@ plot_new_coupon <- data_new_campaign %>%
     summarize(perc_non_male = sum(non_male)/n()*100, perc_minority = sum(minority)/n()*100) %>%
     gather(factor, value, 2:3)
 
+# Gender: Men who recieve coupon vs women who recieve coupon
+plot_gender <- data_new_campaign %>%
+    group_by(non_male) %>%
+    summarize(perc_with_coupon = sum(new_coupon)/n()*100)
+
+ggplot(plot_gender, aes(x=factor(non_male), y=perc_with_coupon, fill=factor(non_male))) +
+  geom_bar(position = "dodge", stat = "identity") +
+  labs(title="Comparison of coupon allocation with regards to gender", x="Male (0) vs. Non-male (1)", y="Coupon allocation in percentage")
+
 ggplot(plot_new_coupon, aes(fill = factor(new_coupon),
         y = value, x = factor, group = new_coupon)) +
     geom_text(aes(label=round(value, digits=2)), position=position_dodge(width=0.9), vjust=-0.25) + 
