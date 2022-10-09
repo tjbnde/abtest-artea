@@ -217,15 +217,16 @@ ggplot(c, aes(x = channel_acq, y = transactions_per_subject, fill=ytest_coupon))
 shopping_cart <- data %>%
     group_by(shopping_cart, test_coupon) %>%
     summarize(number = n(), revenue_per_subject = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
-    unite(test_coupon, shopping_cart)
-    spread(1:4)
+    error = std.error(revenue_after), transactions = mean(trans_after))
 
 
 
-ggplot(shopping_cart, aes(x = revenue_per_subject)) +
-    geom_bar(data = shopping_cart, fill = "red", alpha = 0.3)
-
+ggplot(shopping_cart, aes(x = shopping_cart, y = revenue_per_subject, fill=factor(test_coupon))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error,
+        ymax = revenue_per_subject + error), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to shopping cart and in comparison with and without coupon", x = "Shopping cart (1) or not (0)", y = "Revenue per subect")
 
 # Pervious spendings & Social media
 ## Facebook
