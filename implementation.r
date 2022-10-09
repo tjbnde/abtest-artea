@@ -392,43 +392,6 @@ ggplot(other, aes(x = num_past_purch, y = transactions_per_subject, fill=ytest_c
 # -> Facebook, Instagram with 0-2 past purchses
 #    Referral only with 0 past purchases (but small sample size, high error)
 
-data %>%
-    group_by(test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
-
-
-# ---------------- Could be doubled
-
-# Previous transactions count -> Rev&Trans
-trans_count <- data %>%
-    group_by(num_past_purch, test_coupon) %>%
-    summarize(number = n(), revenue = mean(revenue_after),
-    error_revenue = std.error(revenue_after), transactions = mean(trans_after), 
-    error_trans = std.error(trans_after)) %>%
-    filter(number >= 10)
-
-
-print(trans_count, n = 100)
-ggplot(trans_count, aes(fill = factor(test_coupon),
-        y = revenue, x = factor(num_past_purch), group = test_coupon)) +
-    geom_bar(position = "dodge", stat = "identity") +
-    geom_errorbar(aes(ymin = revenue - error_revenue,
-        ymax = revenue + error_revenue), width = .2,
-        position = position_dodge(.9)) + 
-    labs(title="Revenue per subject with respect to number of past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
-
-
-ggplot(trans_count, aes(fill = factor(test_coupon),
-        y = transactions, x = factor(num_past_purch), group = test_coupon)) +
-    geom_bar(position = "dodge", stat = "identity") +
-    geom_errorbar(aes(ymin = transactions - error_trans,
-        ymax = transactions + error_trans), width = .2,
-        position = position_dodge(.9)) + 
-    labs(title="Transactions per subject with respect to number of past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Transactions per subect")
-# --------------------
-
-
 # Google vs. Facebook with shopping cart
 
 shopping_cart_full <- data %>%
