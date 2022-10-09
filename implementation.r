@@ -114,7 +114,7 @@ ggplot(data, aes(x = weeks_since_visit, fill = test_coupon)) +
 # Check for shopping_cart
 describeBy(data$shopping_cart, data$test_coupon)
 
-ggplot(data, aes(x = shopping_cart, fill = test_coupon)) +
+ggplot(data, aes(x = factor(shopping_cart), fill = test_coupon)) +
   geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
   geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) + 
   labs(title="Comparison of items in shopping cards of persons with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Number of visitors")
@@ -541,26 +541,115 @@ print(increase)
 
 data_new_campaign <- read.csv("data_new_campaign.csv")
 
+
+# What do we learn from the  demographics data?
+# Which groups use which channel?
+channel_acq_gender <- data_new_campaign %>%
+  group_by(channel_acq, non_male) %>%
+  summarize(n = n())
+
+channel_acq_gender
+
+ggplot(channel_acq_gender, aes(x = channel_acq, y = n, fill=factor(non_male))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison acquisiton channel with respect to gender", x = "Acquistion Channel", y = "Number of subjects")
+
+
+channel_acq_minority <- data_new_campaign %>%
+  group_by(channel_acq, minority) %>%
+  summarize(n = n())
+
+
+ggplot(channel_acq_minority, aes(x = channel_acq, y = n, fill=factor(minority))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison acquisiton channel with respect to minority", x = "Acquistion Channel", y = "Number of subjects")
+
+
+
+# Which groups have items in the shopping cart?
+shopping_cart_gender <- data_new_campaign %>%
+  group_by(shopping_cart, non_male) %>%
+  summarize(n = n())
+
+ggplot(shopping_cart_gender, aes(x = factor(shopping_cart), y = n, fill=factor(non_male))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of items in shopping cart with respect to gender", x = "Item in shopping cart [0=no, 1=yes]", y = "Number of subjects")
+
+
+shopping_cart_minority <- data_new_campaign %>%
+  group_by(shopping_cart, minority) %>%
+  summarize(n = n())
+
+ggplot(shopping_cart_minority, aes(x = factor(shopping_cart), y = n, fill=factor(minority))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of items in shopping cart with respect to minority", x = "Item in shopping cart [0=no, 1=yes]", y = "Number of subjects")
+
+
+
+
+# apply our filter on the new campaign data
 data_new_campaign <- data_new_campaign %>%
     mutate(new_coupon = if_else(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3, 1, 0))
 
-# Tobis computations:
+# Check for number in males/females and minorities in overall and in filtered set
+campaign_gender <- data_new_campaign %>%
+  group_by(new_coupon, non_male) %>%
+  summarize(n = n())
+
+
+ggplot(campaign_gender, aes(x = factor(new_coupon), y = n, fill=factor(non_male))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of gender distribution in persons with coupon", x = "Person received coupon [0=no, 1=yes]", y = "Number of subjects")
+
+
+
+
+campaign_minority <- data_new_campaign %>%
+  group_by(new_coupon, minority) %>%
+  summarize(n = n())
+
+ggplot(campaign_minority, aes(x = factor(new_coupon), y = n, fill=factor(minority))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of minority distribution in persons with coupon", x = "Person received coupon [0=no, 1=yes]", y = "Number of subjects")
+
+
 # Check for number in males/females in overall and in filtered set
 customers_with_coupon_new_campaign = data_new_campaign %>%
   filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
 
-customers_with_coupon_new_campaign %>%
+# Annes plot
+new_camp_with_coupon <- customers_with_coupon_new_campaign %>%
   group_by(non_male) %>%
   summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
 
-data_new_campaign %>%
+new_camp_with_coupon
+new_camp_with_coupon$filter=c("With coupon", "With coupon")
+new_camp_with_coupon
+
+new_camp_all <- data_new_campaign %>%
   group_by(non_male) %>%
   summarize(n = n(), portion=n()/count(data_new_campaign))
 
-# Leons computations:
-data_new_campaign %>%
-    group_by(new_coupon) %>%
-    summarize(perc_minority = sum(minority)/n())
+new_camp_all
+new_camp_all$filter=c("All", "All")
+
+join <- rbind(new_camp_all, new_camp_with_coupon)
+join
+join$gender=c("male", "non male", "male", "non male")
+join
+
+ggplot(join, aes(x = gender, y = portion$n, fill=filter)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=round(portion$n, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
+  labs(title="Portion of male or non male with and without coupon filter", x = "Gender", y = "Portion")
+
+# Leons plots
 
 plot_state <- data_new_campaign %>%
     group_by(state) %>%
