@@ -544,10 +544,10 @@ data_new_campaign <- read.csv("data_new_campaign.csv")
 data_new_campaign <- data_new_campaign %>%
     mutate(new_coupon = if_else(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3, 1, 0))
 
+# Tobis computations:
 # Check for number in males/females in overall and in filtered set
 customers_with_coupon_new_campaign = data_new_campaign %>%
   filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
-
 
 customers_with_coupon_new_campaign %>%
   group_by(non_male) %>%
@@ -557,6 +557,7 @@ data_new_campaign %>%
   group_by(non_male) %>%
   summarize(n = n(), portion=n()/count(data_new_campaign))
 
+# Leons computations:
 data_new_campaign %>%
     group_by(new_coupon) %>%
     summarize(perc_minority = sum(minority)/n())
