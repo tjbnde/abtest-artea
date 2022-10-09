@@ -114,7 +114,7 @@ ggplot(data, aes(x = weeks_since_visit, fill = test_coupon)) +
 # Check for shopping_cart
 describeBy(data$shopping_cart, data$test_coupon)
 
-ggplot(data, aes(x = shopping_cart, fill = test_coupon)) +
+ggplot(data, aes(x = factor(shopping_cart), fill = test_coupon)) +
   geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
   geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) + 
   labs(title="Comparison of items in shopping cards of persons with and without coupon", x = "Item in shopping [0 = no, 1=yes]", y = "Number of visitors")
@@ -553,7 +553,7 @@ channel_acq_gender
 ggplot(channel_acq_gender, aes(x = channel_acq, y = n, fill=factor(non_male))) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison acquisiton channel with respect to gender", x = "Number of subjects", y = "Acquisition Channel")
+  labs(title="Comparison acquisiton channel with respect to gender", x = "Acquistion Channel", y = "Number of subjects")
 
 
 channel_acq_minority <- data_new_campaign %>%
@@ -564,7 +564,7 @@ channel_acq_minority <- data_new_campaign %>%
 ggplot(channel_acq_minority, aes(x = channel_acq, y = n, fill=factor(minority))) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison acquisiton channel with respect to minority", x = "Number of subjects", y = "Acquisition Channel")
+  labs(title="Comparison acquisiton channel with respect to minority", x = "Acquistion Channel", y = "Number of subjects")
 
 
 
@@ -576,7 +576,7 @@ shopping_cart_gender <- data_new_campaign %>%
 ggplot(shopping_cart_gender, aes(x = factor(shopping_cart), y = n, fill=factor(non_male))) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison of items in shopping cart with respect to gender", x = "Number of subjects", y = "Item in shopping cart [0=no, 1=yes]")
+  labs(title="Comparison of items in shopping cart with respect to gender", x = "Item in shopping cart [0=no, 1=yes]", y = "Number of subjects")
 
 
 shopping_cart_minority <- data_new_campaign %>%
@@ -586,7 +586,7 @@ shopping_cart_minority <- data_new_campaign %>%
 ggplot(shopping_cart_minority, aes(x = factor(shopping_cart), y = n, fill=factor(minority))) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison of items in shopping cart with respect to minority", x = "Number of subjects", y = "Item in shopping cart [0=no, 1=yes]")
+  labs(title="Comparison of items in shopping cart with respect to minority", x = "Item in shopping cart [0=no, 1=yes]", y = "Number of subjects")
 
 
 
