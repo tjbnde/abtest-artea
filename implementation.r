@@ -557,7 +557,14 @@ data_new_campaign %>%
 
 
 
+# Check for channel_acq in overall and in filtered set
+customers_with_coupon_new_campaign %>%
+  group_by(channel_acq) %>%
+  summarize(n = n())
 
+data_new_campaign %>%
+  group_by(channel_acq) %>%
+  summarize(n = n())
 
 
 
