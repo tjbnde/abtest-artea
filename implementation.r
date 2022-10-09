@@ -493,18 +493,18 @@ ggplot(time_spent, aes(fill = factor(test_coupon),
 # -------------------------------------------------------------------------- #
 # Task 4
 # a. Which of the new customers should recieve a coupon
-# (IG and Shopping Cart) or (0-2 past purchases) or FB
+# (FB and Shopping Cart) or (0-2 past purchases) or IG
 
 # Group#1: YES / YES
 
 data %>%
-    filter((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3) & test_coupon == 1) %>%
-    summarize(n(), mean(revenue_after), std.error(revenue_after))
+    filter((((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3) & test_coupon == 1) %>%
+    summarize(n(), mean(revenue_after), std.error(revenue_after), mean(trans_after), std.error(trans_after))
 
 # Group#2: NO / NO
 
 data %>%
-    filter(!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)) & test_coupon == 0) %>%
+    filter(!((((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3)) & test_coupon == 0) %>%
     summarize(n(), mean(revenue_after), std.error(revenue_after), mean(trans_after), std.error(trans_after))
 
 # Group didn't recieve a coupon (control group)
