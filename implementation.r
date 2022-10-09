@@ -45,8 +45,8 @@ data_channel_acq <- data %>%
     summarize(number = n())
 
 ggplot(data, aes(x = channel_acq, fill = test_coupon)) +
-    geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
-    geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) + 
+    geom_bar(data = data_coupon, fill = "blue", alpha = 0.3) +
+    geom_bar(data = data_no_coupon, fill = "red", alpha = 0.3) + 
     labs(title="Comparison of visitors with and without coupon sorted by channel", x = "Channel", y = "Number of visitors")
 
 # Maybe relevant: wilcox.test(browsing_minutes ~ test_coupon, data = data)
@@ -105,7 +105,7 @@ data %>%
 
 describeBy(data$weeks_since_visit, data$test_coupon)
 
-ggplot(data, aes(x = weeks_since_visit, fill = test_coupon)) +
+ggplot(data, aes(x = factor(weeks_since_visit), fill = test_coupon)) +
     geom_bar(data = data_coupon, fill = "red", alpha = 0.3) +
     geom_bar(data = data_no_coupon, fill = "blue", alpha = 0.3) +
     labs(title="Comparison of weeks since last visit of persons with and without coupon", x="Weeks since last visit", y="Number of person")
@@ -128,7 +128,7 @@ effects_of_coupon <- data %>%
     group_by(test_coupon) %>%
     summarize(
         number = n(), revenue_per_subject = sum(revenue_after) / n(),
-        transactions_per_subject = sum(trans_after) / n()
+        transactions_per_subject = sum(trans_after) / n(), error_rev=std.error(revenue_after), error_trans=std.error(trans_after)
     )
 
 # Plot transactions_per_subject
@@ -136,11 +136,16 @@ plot_data <- data.frame(
     coupon = factor(c("Without coupon", "With coupon"),
         levels = c("Without coupon", "With coupon")
     ),
-    transactions_per_subject = effects_of_coupon$transactions_per_subject
+    transactions_per_subject = effects_of_coupon$transactions_per_subject,
+    error_trans = effects_of_coupon$error_trans,
+    error_rev = effects_of_coupon$error_rev
 )
 ggplot(plot_data, aes(x = coupon, y = transactions_per_subject)) +
     geom_bar(stat = "identity", width = 0.2) +
-    geom_text(aes(label=round(transactions_per_subject, digits=4)), position=position_dodge(width=0.9), vjust=-0.25) +
+     geom_errorbar(aes(ymin = transactions_per_subject - error_trans,
+        ymax = transactions_per_subject + error_trans), width = .2,
+        position = position_dodge(.9)) +
+    geom_text(aes(label=round(transactions_per_subject, digits=4)), position=position_dodge(width=0.9), vjust=-3.5)+
     labs(title="Comparsion number of transactions per subject after the experiment of persons with and without coupon", x="Coupon availability", y="Number of transactions per subject")
 
 # Plot revenue_per_subject
@@ -164,19 +169,27 @@ a <- data %>%
     group_by(test_coupon, num_past_purch) %>%
     summarize(
         number = n(), revenue_per_subject = sum(revenue_after) / n(),
-        transactions_per_subject = sum(trans_after) / n()
-    )
+        transactions_per_subject = sum(trans_after) / n(), 
+        error_revenue = std.error(revenue_after),
+        error_trans = std.error(trans_after)
+    ) %>% filter(number >= 10 )
 a$ytest_coupon = factor(a$test_coupon)
 print(n = 100, a)
 # A: Yes, it does. E
 
 ggplot(a, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
-  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) + 
+  geom_errorbar(aes(ymin = revenue_per_subject - error_revenue,
+        ymax = revenue_per_subject + error_revenue), width = .2,
+        position = position_dodge(.9)) +
   labs(title="Revenue per subject with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
 
 
 ggplot(a, aes(x = num_past_purch, y = transactions_per_subject, fill=ytest_coupon)) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = transactions_per_subject - error_trans,
+      ymax = transactions_per_subject + error_trans), width = .2,
+      position = position_dodge(.9)) +
   labs(title="Transaction per subject with respect to past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Transactions per subect")
 
 
@@ -186,7 +199,7 @@ b <- data %>%
 b
 b$ytest_coupon = factor(b$test_coupon)
 
-ggplot(b, aes(x = weeks_since_visit, y = revenue_per_subject, fill=ytest_coupon)) +
+ggplot(b, aes(x = factor(weeks_since_visit), y = revenue_per_subject, fill=ytest_coupon)) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_text(aes(label=round(revenue_per_subject, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) +
   labs(title="Revenue per subject with respect to weeks since last visit and in comparison with and without coupon", x = "Weeks since last visit", y = "Revenue per subect")
@@ -217,16 +230,15 @@ ggplot(c, aes(x = channel_acq, y = transactions_per_subject, fill=ytest_coupon))
 shopping_cart <- data %>%
     group_by(shopping_cart, test_coupon) %>%
     summarize(number = n(), revenue_per_subject = mean(revenue_after),
-    error = std.error(revenue_after), transactions = mean(trans_after))
+    error = std.error(revenue_after), transactions = mean(trans_after)) %>%
+    unite(test_coupon, shopping_cart)
+    spread(1:4)
 
 
 
-ggplot(shopping_cart, aes(x = shopping_cart, y = revenue_per_subject, fill=factor(test_coupon))) +
-  geom_bar(stat="identity", color="black", position=position_dodge()) +
-  geom_errorbar(aes(ymin = revenue_per_subject - error,
-        ymax = revenue_per_subject + error), width = .2,
-        position = position_dodge(.9)) +
-  labs(title="Revenue per subject with respect to shopping cart and in comparison with and without coupon", x = "Shopping cart (1) or not (0)", y = "Revenue per subect")
+ggplot(shopping_cart, aes(x = revenue_per_subject)) +
+    geom_bar(data = shopping_cart, fill = "red", alpha = 0.3)
+
 
 # Pervious spendings & Social media
 ## Facebook
@@ -650,24 +662,33 @@ ggplot(join, aes(x = gender, y = portion$n, fill=filter)) +
   geom_text(aes(label=round(portion$n, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
   labs(title="Portion of male or non male with and without coupon filter", x = "Gender", y = "Portion")
 
+
 # Leons plots
 
 plot_state <- data_new_campaign %>%
     group_by(state) %>%
-    summarize(with_coupon = sum(new_coupon)/n(), minority = sum(minority)/n()) %>%
+    summarize(with_coupon = sum(new_coupon)/n(), minority = sum(minority)/n())  %>%
     gather(factor, value, 2:3)
+
+plot_state
 
 plot_new_coupon <- data_new_campaign %>%
     group_by(new_coupon) %>%
-    summarize(perc_non_male = sum(non_male)/n(), perc_minority = sum(minority)/n()) %>%
+    summarize(perc_non_male = sum(non_male)/n()*100, perc_minority = sum(minority)/n()*100) %>%
     gather(factor, value, 2:3)
 
 ggplot(plot_new_coupon, aes(fill = factor(new_coupon),
         y = value, x = factor, group = new_coupon)) +
-    geom_bar(position = "dodge", stat = "identity")
+    geom_text(aes(label=round(value, digits=2)), position=position_dodge(width=0.9), vjust=-0.25) + 
+    geom_bar(position = "dodge", color="black", stat = "identity")+d
+    labs(title="Comparison of gender and minority characteristics with and without coupon", x="Gender and Minority", y="Percentage of persons")
 
-ggplot(plot_state, aes(x=as.factor(state), y=value, fill=factor)) +
-  geom_bar(position = "dodge", stat = "identity")
+# => Plot Ohne und mit coupon 
+# Müsste das nicht der Plot: alle und mit coupon  
+
+ggplot(plot_state, aes(x=factor(state), y=value, fill=factor)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  labs(title="Comparison of coupon allocation with regards to minorities in states", x="States", y="Proportion of coupons and minority")
 
 # => Minorities get excluded disproportionally
 # => Non-male get slighly excluded from coupon
