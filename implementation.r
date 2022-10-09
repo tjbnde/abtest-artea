@@ -596,16 +596,59 @@ data_new_campaign <- data_new_campaign %>%
     mutate(new_coupon = if_else(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3, 1, 0))
 
 # Check for number in males/females and minorities in overall and in filtered set
-data_new_campaign %>%
+campaign_gender <- data_new_campaign %>%
   group_by(new_coupon, non_male) %>%
   summarize(n = n())
 
-data_new_campaign %>%
+
+ggplot(campaign_gender, aes(x = factor(new_coupon), y = n, fill=factor(non_male))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of gender distribution in persons with coupon", x = "Person received coupon [0=no, 1=yes]", y = "Number of subjects")
+
+
+
+
+campaign_minority <- data_new_campaign %>%
   group_by(new_coupon, minority) %>%
   summarize(n = n())
 
+ggplot(campaign_minority, aes(x = factor(new_coupon), y = n, fill=factor(minority))) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
+  labs(title="Comparison of minority distribution in persons with coupon", x = "Person received coupon [0=no, 1=yes]", y = "Number of subjects")
 
 
+# Check for number in males/females in overall and in filtered set
+customers_with_coupon_new_campaign = data_new_campaign %>%
+  filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
+
+
+new_camp_with_coupon <- customers_with_coupon_new_campaign %>%
+  group_by(non_male) %>%
+  summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
+
+new_camp_with_coupon
+new_camp_with_coupon$filter=c("With coupon", "With coupon")
+new_camp_with_coupon
+
+new_camp_all <- data_new_campaign %>%
+  group_by(non_male) %>%
+  summarize(n = n(), portion=n()/count(data_new_campaign))
+
+new_camp_all
+new_camp_all$filter=c("All", "All")
+
+join <- rbind(new_camp_all, new_camp_with_coupon)
+join
+
+join$gender=c("male", "non male", "male", "non male")
+join
+
+ggplot(join, aes(x = gender, y = portion$n, fill=filter)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=round(portion$n, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
+  labs(title="Portion of male or non male with and without coupon filter", x = "Gender", y = "Portion")
 
 
 
