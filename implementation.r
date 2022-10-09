@@ -547,22 +547,31 @@ customers_with_coupon_new_campaign = data_new_campaign %>%
   filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
 
 
-customers_with_coupon_new_campaign %>%
+new_camp_with_coupon <- customers_with_coupon_new_campaign %>%
   group_by(non_male) %>%
   summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
 
-data_new_campaign %>%
+new_camp_with_coupon
+new_camp_with_coupon$filter=c("With coupon", "With coupon")
+new_camp_with_coupon
+
+new_camp_all <- data_new_campaign %>%
   group_by(non_male) %>%
   summarize(n = n(), portion=n()/count(data_new_campaign))
 
+new_camp_all
+new_camp_all$filter=c("All", "All")
 
+join <- rbind(new_camp_all, new_camp_with_coupon)
+join
 
+join$gender=c("male", "non male", "male", "non male")
+join
 
-
-
-
-
-
+ggplot(join, aes(x = gender, y = portion$n, fill=filter)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_text(aes(label=round(portion$n, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
+  labs(title="Portion of male or non male with and without coupon filter", x = "Gender", y = "Portion")
 
 
 # Annes Plots (might be sorted in or removed in the end)
