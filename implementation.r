@@ -623,7 +623,7 @@ ggplot(campaign_minority, aes(x = factor(new_coupon), y = n, fill=factor(minorit
 customers_with_coupon_new_campaign = data_new_campaign %>%
   filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
 
-
+# Annes plot
 new_camp_with_coupon <- customers_with_coupon_new_campaign %>%
   group_by(non_male) %>%
   summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
@@ -641,7 +641,6 @@ new_camp_all$filter=c("All", "All")
 
 join <- rbind(new_camp_all, new_camp_with_coupon)
 join
-
 join$gender=c("male", "non male", "male", "non male")
 join
 
@@ -650,10 +649,30 @@ ggplot(join, aes(x = gender, y = portion$n, fill=filter)) +
   geom_text(aes(label=round(portion$n, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
   labs(title="Portion of male or non male with and without coupon filter", x = "Gender", y = "Portion")
 
+# Leons plots
 
+plot_state <- data_new_campaign %>%
+    group_by(state) %>%
+    summarize(with_coupon = sum(new_coupon)/n(), minority = sum(minority)/n()) %>%
+    gather(factor, value, 2:3)
 
+plot_new_coupon <- data_new_campaign %>%
+    group_by(new_coupon) %>%
+    summarize(perc_non_male = sum(non_male)/n(), perc_minority = sum(minority)/n()) %>%
+    gather(factor, value, 2:3)
 
+ggplot(plot_new_coupon, aes(fill = factor(new_coupon),
+        y = value, x = factor, group = new_coupon)) +
+    geom_bar(position = "dodge", stat = "identity")
 
+ggplot(plot_state, aes(x=as.factor(state), y=value, fill=factor)) +
+  geom_bar(position = "dodge", stat = "identity")
+
+# => Minorities get excluded disproportionally
+# => Non-male get slighly excluded from coupon
+# => States with minorities get excluded, 
+# => States (although unopinionated on the surface) 
+#       are a discriminatory factor as well
 
 
 
