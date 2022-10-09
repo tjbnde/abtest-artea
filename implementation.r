@@ -395,7 +395,7 @@ shopping_cart_full <- data %>%
 head(shopping_cart_full)
 
 ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
-        y = revenue, x = shopping_cart, group = test_coupon)) +
+        y = revenue, x = factor(shopping_cart), group = test_coupon)) +
     geom_bar(position = "dodge", stat = "identity") +
     geom_errorbar(aes(ymin = revenue - error_revenue,
         ymax = revenue + error_revenue), width = .2,
@@ -404,7 +404,7 @@ ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
 
 
 ggplot(shopping_cart_full, aes(fill = factor(test_coupon),
-        y = transactions, x = shopping_cart, group = test_coupon)) +
+        y = transactions, x = factor(shopping_cart), group = test_coupon)) +
     geom_bar(position = "dodge", stat = "identity") +
     geom_errorbar(aes(ymin = transactions - error_trans,
         ymax = transactions + error_trans), width = .2,
