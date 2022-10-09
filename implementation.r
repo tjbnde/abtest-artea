@@ -244,7 +244,7 @@ ggplot(shopping_cart, aes(x = shopping_cart, y = revenue_per_subject, fill=facto
         position = position_dodge(.9)) +
   labs(title="Revenue per subject with respect to shopping cart and in comparison with and without coupon", x = "Shopping cart (1) or not (0)", y = "Revenue per subect")
 
-# Pervious spendings & Social media
+# Number of past purchases & Social media
 ## Facebook
 facebook <- data %>%
     filter(channel_acq == 2) %>%
@@ -319,6 +319,24 @@ ggplot(referral, aes(x = num_past_purch, y = transactions_per_subject, fill=ytes
         position = position_dodge(.9)) +
   labs(title="Transactions per subject with respect to referral channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Transactions per subect")
 
+## google
+
+google <- data %>%
+    filter(channel_acq == 1) %>%
+    group_by(num_past_purch, test_coupon) %>%
+    summarize(number = n(), revenue_per_subject = mean(revenue_after),
+    error_revenue = std.error(revenue_after), transactions_per_subject = mean(trans_after), error_trans = std.error(trans_after)) %>%
+    filter(number >= 10)
+
+google$ytest_coupon=factor(google$test_coupon)
+
+ggplot(google, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_coupon)) +
+  geom_bar(stat="identity", color="black", position=position_dodge()) +
+  geom_errorbar(aes(ymin = revenue_per_subject - error_revenue,
+        ymax = revenue_per_subject + error_revenue), width = .2,
+        position = position_dodge(.9)) +
+  labs(title="Revenue per subject with respect to google channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
+
 
 ## Other
 other <- data %>%
@@ -355,6 +373,9 @@ data %>%
     summarize(number = n(), revenue = mean(revenue_after),
     error = std.error(revenue_after), transactions = mean(trans_after))
 
+
+# ---------------- Could be doubled
+
 # Previous transactions count -> Rev&Trans
 trans_count <- data %>%
     group_by(num_past_purch, test_coupon) %>%
@@ -365,7 +386,6 @@ trans_count <- data %>%
 
 
 print(trans_count, n = 100)
-# ---------------- Could be doubled
 ggplot(trans_count, aes(fill = factor(test_coupon),
         y = revenue, x = factor(num_past_purch), group = test_coupon)) +
     geom_bar(position = "dodge", stat = "identity") +
@@ -383,6 +403,8 @@ ggplot(trans_count, aes(fill = factor(test_coupon),
         position = position_dodge(.9)) + 
     labs(title="Transactions per subject with respect to number of past purchases and in comparison with and without coupon", x = "Number of past purchases", y = "Transactions per subect")
 # --------------------
+
+
 # Google vs. Facebook with shopping cart
 
 shopping_cart_full <- data %>%
@@ -475,9 +497,6 @@ ggplot(shopping_cart_ref, aes(fill = factor(test_coupon), y = revenue, x = facto
     labs(title="Revenue of referral channel acquisition with persons having items in shopping carts", x = "Items in shopping cart [0=no; 1=yes]", y = "Revenue per person")
 
 
-
-
-
 # => For Facebook only with item in shopping cart,
 #  Instagram regardless of the shopping cart,
 #  revenue increases for the coupon
@@ -494,12 +513,15 @@ time_past <- data %>%
 
 print(time_past, n=100)
 
+time_past
+
 ggplot(time_past, aes(fill = factor(test_coupon),
         y = revenue, x = weeks_since_visit, group = test_coupon)) +
     geom_bar(position = "dodge", stat = "identity") +
     geom_errorbar(aes(ymin = revenue - error_revenue,
         ymax = revenue + error_revenue), width = .2,
-        position = position_dodge(.9))
+        position = position_dodge(.9)) +
+    labs(title="Revenue with respect to weeks since last visit and coupon availability", x="Weeks since last visit", y="Revenue")
 
 # Browsing Minutes => Few minutes better for coupon but high error
 
@@ -518,7 +540,9 @@ ggplot(time_spent, aes(fill = factor(test_coupon),
     geom_bar(position = "dodge", stat = "identity") +
     geom_errorbar(aes(ymin = revenue - error_revenue,
         ymax = revenue + error_revenue), width = .2,
-        position = position_dodge(.9))
+        position = position_dodge(.9)) +
+    labs(title="Revenue with respect to browsing minutes and coupon availability", x="Browsing Minutes", y="Revenue")
+
 
 # b. Is it relevant for everyone or just for a specific target group?
 #    Difference between channels or customers?
