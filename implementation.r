@@ -749,139 +749,40 @@ ggplot(campaign_minority, aes(x = factor(new_coupon), y = n, fill=factor(minorit
 customers_with_coupon_new_campaign = data_new_campaign %>%
   filter(((channel_acq == 2 & shopping_cart == 1) |  channel_acq == 3) & num_past_purch < 3)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ---------------- will be deleted in the end -------------
-# Annes plot
-new_camp_with_coupon <- customers_with_coupon_new_campaign %>%
-  group_by(non_male) %>%
-  summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
-
-new_camp_with_coupon
-new_camp_with_coupon$filter=c("With coupon", "With coupon")
-new_camp_with_coupon
-
-new_camp_all <- data_new_campaign %>%
-  group_by(non_male) %>%
-  summarize(n = n(), portion=n()/count(data_new_campaign))
-
-new_camp_all
-new_camp_all$filter=c("All", "All")
-
-join <- rbind(new_camp_all, new_camp_with_coupon)
-join
-join$gender=c("male", "non male", "male", "non male")
-join
-
-ggplot(join, aes(x = gender, y = portion$n, fill=filter)) +
-  geom_bar(stat="identity", color="black", position=position_dodge()) +
-  geom_text(aes(label=round(portion$n, digits=3)), position=position_dodge(width=0.9), vjust=-0.25) + 
-  labs(title="Portion of male or non male with and without coupon filter", x = "Gender", y = "Portion")
-
-
-# Leons plots
-
+# Comparison of coupon alloc. with regards to minorities in states
 plot_state <- data_new_campaign %>%
     group_by(state) %>%
     summarize(with_coupon = sum(new_coupon)/n(), minority = sum(minority)/n())  %>%
     gather(factor, value, 2:3)
 
-plot_state
-
-plot_new_coupon <- data_new_campaign %>%
-    group_by(new_coupon) %>%
-    summarize(perc_non_male = sum(non_male)/n()*100, perc_minority = sum(minority)/n()*100) %>%
-    gather(factor, value, 2:3)
-
-
-ggplot(plot_new_coupon, aes(fill = factor(new_coupon),
-        y = value, x = factor, group = new_coupon)) +
-    geom_text(aes(label=round(value, digits=2)), position=position_dodge(width=0.9), vjust=-0.25) + 
-    geom_bar(position = "dodge", color="black", stat = "identity")+
-    labs(title="Comparison of gender and minority characteristics with and without coupon", x="Gender and Minority", y="Percentage of persons")
-
-# => Plot Ohne und mit coupon 
-# Müsste das nicht der Plot: alle und mit coupon  
+data_new_campaign %>%
+    group_by(state) %>%
+    summarize(sum(minority), sum(non_male))
 
 ggplot(plot_state, aes(x=factor(state), y=value, fill=factor)) +
-  geom_bar(position = "dodge", stat = "identity") +
+  geom_bar(position=position_dodge(width=0.9), stat = "identity", color="black") +
   labs(title="Comparison of coupon allocation with regards to minorities in states", x="States", y="Proportion of coupons and minority")
+
+# Gender: Men who recieve coupon vs women who recieve coupon
+plot_gender <- data_new_campaign %>%
+    group_by(non_male) %>%
+    summarize(perc_with_coupon = sum(new_coupon)/n()*100)
+
+ggplot(plot_gender, aes(x=factor(non_male), y=perc_with_coupon, fill=factor(non_male))) +
+  geom_bar(position=position_dodge(width=0.9), color="black", stat = "identity") +
+  labs(title="Comparison of coupon allocation with regards to gender", x="Male (0) vs. Non-male (1)", y="Coupon allocation in percentage")
+
+# Minority: Minorities who recieve coupon vs Non-Minorities who recieve coupon
+plot_minority <- data_new_campaign %>%
+    group_by(minority) %>%
+    summarize(perc_with_coupon = sum(new_coupon)/n()*100)
+
+ggplot(plot_minority, aes(x=factor(minority), y=perc_with_coupon, fill=factor(minority))) +
+  geom_bar(position=position_dodge(width=0.9), color="black", stat = "identity") +
+  labs(title="Comparison of coupon allocation with regards to minorities", x="Non-minority (0) vs. Minority (1)", y="Coupon allocation in percentage") 
 
 # => Minorities get excluded disproportionally
 # => Non-male get slighly excluded from coupon
-# => States with minorities get excluded, 
-# => States (although unopinionated on the surface) 
+# => States with minorities get excluded,
+# => States (although unopinionated on the surface)
 #       are a discriminatory factor as well
-
-
-
-# Annes Plots (might be sorted in or removed in the end)
-
-data$ytest_coupon=factor(data$test_coupon)
-data$yshopping_cart=factor(data$shopping_cart)
-data_channel_acq <- data %>%
-    group_by(test_coupon, channel_acq) %>%
-    summarize(n = n())
-data_channel_acq$ytest_coupon=factor(data_channel_acq$test_coupon)
-
-# --- Grouped Bar Plot --- #
-ggplot(data_channel_acq, aes(x = channel_acq, y = n, fill=ytest_coupon)) +
-  geom_bar(stat="identity", color="black", position=position_dodge()) +
-  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison of persons with and without coupon sorted by channel", x = "Channel", y = "Number of persons")
-
-# --- Boxplot Browsing Minutes --- #
-ggplot(data, aes(x = ytest_coupon, y = browsing_minutes, fill = ytest_coupon)) +
-  geom_boxplot() + 
-  stat_summary(fun.y=mean, geom="point", shape=20, size=7, color="red", fill="red") +
-  labs(title="Boxplot browsing minutes with and without test coupon", x="Test coupon", y="Browsing Minutes")
-
-data_browing_minutes <- data %>%
-  group_by(test_coupon, browsing_minutes) %>%
-  summarize(n = n())
-
-data_browing_minutes
-data_browing_minutes$ytest_coupon=factor(data_browing_minutes$test_coupon)
-
-ggplot(data_browing_minutes, aes(x = browsing_minutes, y = n, fill=ytest_coupon)) +
-  geom_bar(stat="identity", color="black", position=position_dodge()) +
-  geom_text(aes(label=n), position=position_dodge(width=0.9), vjust=-0.25) +
-  labs(title="Comparison of persons with and without coupon sorted by channel", x = "Channel", y = "Number of persons")
-
-# --- Boxplot Number of past purchases --- #
-ggplot(data, aes(x = ytest_coupon, y = num_past_purch, fill = ytest_coupon)) +
-  geom_boxplot() + 
-  stat_summary(fun=mean, geom="point", shape=20, size=7, color="red", fill="red") +
-  labs(title="Number of past purchases with and without test coupon", x="Test coupon", y="Number of past purchases")
-
-
-ggplot(data, aes(x = ytest_coupon, y = spent_last_purchase, fill = ytest_coupon)) +
-  geom_boxplot() + 
-  stat_summary(fun.y=mean, geom="point", shape=20, size=7, color="red", fill="red") +
-  labs(title="Boxplot comparison money spent during last purchase with and without test coupon", x="Test coupon", y="Money spent during last purchase")
