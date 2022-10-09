@@ -539,10 +539,50 @@ print(increase)
 # Results from discussion:
 # revenue with coupons got worse
 
+data_new_campaign <- read.csv("data_new_campaign.csv")
+
+data_new_campaign <- data_new_campaign %>%
+    mutate(new_coupon = if_else(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3, 1, 0))
+
+# Check for number in males/females in overall and in filtered set
+customers_with_coupon_new_campaign = data_new_campaign %>%
+  filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
 
 
+customers_with_coupon_new_campaign %>%
+  group_by(non_male) %>%
+  summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
 
+data_new_campaign %>%
+  group_by(non_male) %>%
+  summarize(n = n(), portion=n()/count(data_new_campaign))
 
+data_new_campaign %>%
+    group_by(new_coupon) %>%
+    summarize(perc_minority = sum(minority)/n())
+
+plot_state <- data_new_campaign %>%
+    group_by(state) %>%
+    summarize(with_coupon = sum(new_coupon)/n(), minority = sum(minority)/n()) %>%
+    gather(factor, value, 2:3)
+
+plot_new_coupon <- data_new_campaign %>%
+    group_by(new_coupon) %>%
+    summarize(perc_non_male = sum(non_male)/n(), perc_minority = sum(minority)/n()) %>%
+    gather(factor, value, 2:3)
+
+ggplot(plot_new_coupon, aes(fill = factor(new_coupon),
+        y = value, x = factor, group = new_coupon)) +
+    geom_bar(position = "dodge", stat = "identity")
+
+ggplot(plot_state, aes(x=as.factor(state), y=value, fill=factor)) +
+  geom_bar(position = "dodge", stat = "identity")
+
+# => Minorities get excluded disproportionally
+# => Non-male get slighly excluded from coupon
+# => States with minorities get excluded, 
+# => States (although unopinionated on the surface) 
+#       are a discriminatory factor as well
 
 
 
