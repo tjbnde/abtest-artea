@@ -505,27 +505,27 @@ data %>%
 
 data %>%
     filter(!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)) & test_coupon == 0) %>%
-    summarize(n(), mean(revenue_after), std.error(revenue_after))
+    summarize(n(), mean(revenue_after), std.error(revenue_after), mean(trans_after), std.error(trans_after))
 
-# Group didn't recieve a coupon
+# Group didn't recieve a coupon (control group)
 
 control_cust_data <- data %>%
     filter(test_coupon == 0) %>%
-    summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after))
+    summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after), mean_trans = mean(trans_after), std.error(trans_after))
 
 # Group #1 + #2 (with AND num_past_purch  < 3)
 
 chosen_cust_data <- data %>%
     filter(((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3) & test_coupon == 1) |
         (!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)) & test_coupon == 0)) %>%
-    summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after))
+    summarize(n(), mean_revenue = mean(revenue_after), std.error(revenue_after), mean_trans = mean(trans_after), std.error(trans_after))
 
 # Group #1 + #2 (with OR num_past_purch  < 3)
 
 data %>%
     filter(((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) | num_past_purch < 3) & test_coupon == 1) |
         (!((((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) | num_past_purch < 3)) & test_coupon == 0)) %>%
-    summarize(n(), mean(revenue_after), std.error(revenue_after))
+    summarize(n(), mean(revenue_after), std.error(revenue_after), mean(trans_after), std.error(trans_after))
 
 # Previous test without proper coupon consideration
 
@@ -540,10 +540,21 @@ data %>%
 # b. By how much in terms of revenue increase would this campaign be effective
 # if those cust. were targeted
 
-increase <- chosen_cust_data$mean_revenue / control_cust_data$mean_revenue
+increase <- (chosen_cust_data$mean_revenue / control_cust_data$mean_revenue) - 1
 print(increase)
 
 # => Mean revenue increased by 9.7%
+
+# b. By how much in terms of transactions increase would this campaign be effective
+# if those cust. were targeted
+
+increase <- (chosen_cust_data$mean_trans / control_cust_data$mean_trans) - 1
+print(increase)
+
+# => Transactions increased by 15.6%
+
+# b. By how much in terms of revenue increase would this campaign be effective
+# if those cust. were targeted
 
 # -------------------------------------------------------------------------- #
 # Task 5
