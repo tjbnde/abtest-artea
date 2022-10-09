@@ -307,7 +307,7 @@ ggplot(referral, aes(x = num_past_purch, y = revenue_per_subject, fill=ytest_cou
         position = position_dodge(.9)) +
   labs(title="Revenue per subject with respect to referral channel acquistion and in comparison with and without coupon", x = "Number of past purchases", y = "Revenue per subect")
 
-ggplot(referral, aes(x = num_past_purch, y = revenue_transactions_per_subject, fill=ytest_coupon)) +
+ggplot(referral, aes(x = num_past_purch, y = transactions_per_subject, fill=ytest_coupon)) +
   geom_bar(stat="identity", color="black", position=position_dodge()) +
   geom_errorbar(aes(ymin = transactions_per_subject - error_trans,
         ymax = transactions_per_subject + error_trans), width = .2,
