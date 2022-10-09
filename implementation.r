@@ -541,32 +541,48 @@ print(increase)
 
 data_new_campaign <- read.csv("data_new_campaign.csv")
 
+
+# What do we learn from the  demographics data?
+# Which groups use which channel?
+data_new_campaign %>%
+  group_by(channel_acq, non_male) %>%
+  summarize(n = n())
+# TODO: Plot
+
+data_new_campaign %>%
+  group_by(channel_acq, minority) %>%
+  summarize(n = n())
+# TODO: Plot
+
+# Which groups have items in the shopping cart?
+data_new_campaign %>%
+  group_by(shopping_cart, non_male) %>%
+  summarize(n = n())
+# TODO: Plot
+
+data_new_campaign %>%
+  group_by(shopping_cart, minority) %>%
+  summarize(n = n())
+# TODO: Plot
+
+
+
+# apply our filter on the new campaign data
 data_new_campaign <- data_new_campaign %>%
     mutate(new_coupon = if_else(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3, 1, 0))
 
-# Check for number in males/females in overall and in filtered set
-customers_with_coupon_new_campaign = data_new_campaign %>%
-  filter(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3)
-
-
-customers_with_coupon_new_campaign %>%
-  group_by(non_male) %>%
-  summarize(n = n(), portion=n()/count(customers_with_coupon_new_campaign))
-
+# Check for number in males/females and minorities in overall and in filtered set
 data_new_campaign %>%
-  group_by(non_male) %>%
-  summarize(n = n(), portion=n()/count(data_new_campaign))
-
-
-
-# Check for channel_acq in overall and in filtered set
-customers_with_coupon_new_campaign %>%
-  group_by(channel_acq) %>%
+  group_by(new_coupon, non_male) %>%
   summarize(n = n())
 
 data_new_campaign %>%
-  group_by(channel_acq) %>%
+  group_by(new_coupon, minority) %>%
   summarize(n = n())
+
+
+
+
 
 
 
