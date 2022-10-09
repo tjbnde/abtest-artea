@@ -541,6 +541,10 @@ print(increase)
 
 data_new_campaign <- read.csv("data_new_campaign.csv")
 
+data_new_campaign <- data_new_campaign %>%
+    mutate(new_coupon = if_else(((channel_acq == 3 & shopping_cart == 1) |  channel_acq == 2) & num_past_purch < 3, 1, 0)) %>%
+    group_by(new_coupon) %>%
+    summarize(n())
 
 # Check for number in males/females in overall and in filtered set
 customers_with_coupon_new_campaign = data_new_campaign %>%
